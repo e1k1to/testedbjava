@@ -2,6 +2,7 @@ package xyz.linuwux;
 
 
 import xyz.linuwux.persistence.migration.MigrationStrategy;
+import xyz.linuwux.ui.MainMenu;
 
 import java.sql.SQLException;
 
@@ -12,5 +13,6 @@ public class Main {
         try(var connection = getConnection() ) {
             new MigrationStrategy(connection).executeMigration();
         }
+        new MainMenu().execute();
     }
 }

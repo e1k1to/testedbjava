@@ -6,14 +6,32 @@ import xyz.linuwux.persistence.entity.BoardColumnEntity;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+
+import static xyz.linuwux.persistence.entity.BoardColumnKindEnum.findByName;
 
 @AllArgsConstructor
 public class BoardColumnDAO {
     private final Connection connection;
 
-    public static List<BoardColumnEntity> findByBoardId(Long id) throws SQLException{
-        return null;
+    public List<BoardColumnEntity> findByBoardId(final Long id) throws SQLException{
+        List<BoardColumnEntity> entities = new ArrayList<>();
+        var sql = "SELECT id, name, `order`, kind FROM BOARDS_COLUMNS WHERE board_id = ? ORDER BY `order`";
+        try(var statement = connection.prepareStatement(sql) ){
+            statement.setLong(1, id);
+            statement.executeQuery();
+            var resultSet = statement.getResultSet();
+            while (resultSet.next()) {
+                var entity = new BoardColumnEntity();
+                entity.setId(resultSet.getLong("id"));
+                entity.setName(resultSet.getString("name"));
+                entity.setOrder(resultSet.getInt("order"));
+                entity.setKind(findByName(resultSet.getString("kind")));
+                entities.add(entity);
+            }
+            return(entities);
+        }
     }
 
     public BoardColumnEntity insert(final BoardColumnEntity entity) throws SQLException {
